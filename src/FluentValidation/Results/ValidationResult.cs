@@ -26,7 +26,11 @@ namespace FluentValidation.Results {
 	/// </summary>
 	[Serializable]
 	public class ValidationResult {
+#if NETSTANDARD2_0 || NETSTANDARD2_1 || NETCOREAPP3_1
 		private List<ValidationFailure> _errors;
+#else
+		private readonly List<ValidationFailure> _errors;
+#endif
 
 		/// <summary>
 		/// Whether validation succeeded
@@ -38,14 +42,18 @@ namespace FluentValidation.Results {
 		/// </summary>
 		public List<ValidationFailure> Errors {
 			get => _errors;
+#if NETSTANDARD2_0 || NETSTANDARD2_1 || NETCOREAPP3_1
 			set {
+#else
+			init {
+#endif
 				if (value == null) {
 					throw new ArgumentNullException(nameof(value));
 				}
 
 				// Ensure any nulls are removed and the list is copied
 				// to be consistent with the constructor below.
-				_errors = value.Where(failure => failure != null).ToList();;
+				_errors = value.Where(failure => failure != null).ToList();
 			}
 		}
 
